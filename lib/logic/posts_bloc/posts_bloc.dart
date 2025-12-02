@@ -31,7 +31,7 @@ class PostsBloc extends Bloc<PostsEvent, PostsState> {
     LoadInitialPosts event,
     Emitter<PostsState> emit,
   ) async {
-    emit(PostsLoading());
+    emit(PostsLoading()); // This is already there
 
     // Try to load from cache first
     try {

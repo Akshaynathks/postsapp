@@ -21,6 +21,7 @@ class _PostsScreenState extends State<PostsScreen> {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
   late PostsBloc _postsBloc;
+  bool _isRefreshing = false;
 
   @override
   void initState() {
@@ -28,6 +29,13 @@ class _PostsScreenState extends State<PostsScreen> {
     _postsBloc = context.read<PostsBloc>();
     _scrollController.addListener(_onScroll);
     _searchController.addListener(_onSearchChanged);
+
+    // Initial load if needed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_postsBloc.state is PostsInitial) {
+        _postsBloc.add(LoadInitialPosts());
+      }
+    });
   }
 
   @override
@@ -49,7 +57,10 @@ class _PostsScreenState extends State<PostsScreen> {
   }
 
   Future<void> _onRefresh() async {
+    _isRefreshing = true;
     _postsBloc.add(RefreshPosts());
+    await Future.delayed(const Duration(seconds: 1));
+    _isRefreshing = false;
   }
 
   void _onSearchChanged() {
@@ -74,7 +85,13 @@ class _PostsScreenState extends State<PostsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Posts'), backgroundColor: Colors.blue),
+      appBar: AppBar(
+        title: const Text('Posts'),
+        backgroundColor: Colors.blue,
+        actions: [
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _onRefresh),
+        ],
+      ),
       body: SafeArea(
         child: Column(
           children: [
@@ -100,17 +117,6 @@ class _PostsScreenState extends State<PostsScreen> {
             Expanded(
               child: BlocConsumer<PostsBloc, PostsState>(
                 listener: (context, state) {
-                  // if (state is PostsLoaded && state.isCached) {
-                  //   WidgetsBinding.instance.addPostFrameCallback((_) {
-                  //     ScaffoldMessenger.of(context).showSnackBar(
-                  //       const SnackBar(
-                  //         content: Text('Showing cached data'),
-                  //         duration: Duration(seconds: 2),
-                  //       ),
-                  //     );
-                  //   });
-                  // }
-
                   if (state is PostsError && !state.hasCachedData) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -123,8 +129,8 @@ class _PostsScreenState extends State<PostsScreen> {
                   }
                 },
                 builder: (context, state) {
-                  // Handle initial and loading states
-                  if (state is PostsInitial || state is PostsLoading) {
+                  // Handle loading state (initial load)
+                  if (state is PostsLoading && !_isRefreshing) {
                     return _buildShimmerList();
                   }
 
@@ -136,6 +142,11 @@ class _PostsScreenState extends State<PostsScreen> {
                   // Handle loaded state
                   if (state is PostsLoaded) {
                     return _buildPostsList(state);
+                  }
+
+                  // Handle initial state - show shimmer
+                  if (state is PostsInitial) {
+                    return _buildShimmerList();
                   }
 
                   // Fallback
@@ -151,7 +162,7 @@ class _PostsScreenState extends State<PostsScreen> {
 
   Widget _buildShimmerList() {
     return ListView.builder(
-      itemCount: 6,
+      itemCount: 10,
       itemBuilder: (context, index) {
         return const PostShimmerItem();
       },
@@ -236,9 +247,10 @@ class _PostsScreenState extends State<PostsScreen> {
                 ),
               );
             } else {
+              // Show shimmer for loading more instead of just LoadingIndicator
               return const Padding(
-                padding: EdgeInsets.symmetric(vertical: 12.0),
-                child: Center(child: LoadingIndicator()),
+                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: PostShimmerItem(),
               );
             }
           },
