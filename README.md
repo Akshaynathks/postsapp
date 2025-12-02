@@ -1,16 +1,38 @@
-# posts_list
+# Flutter Posts Pagination App
 
-A new Flutter project.
+A clean Flutter application demonstrating:
+- Infinite Scroll Pagination
+- Offline Caching using Hive
+- Shimmer Loading Placeholders
+- Error Handling with Retry
+- Search Functionality
+- Animations
+- Responsive UI
 
-## Getting Started
+##  Features
 
-This project is a starting point for a Flutter application.
+✔ Pagination  
+✔ Shimmer Loading  
+✔ Offline Cache  
+✔ Search posts  
+✔ Detail Page  
+✔ Pull to refresh  
+✔ Responsive UI (MediaQuery + ScreenUtil)  
+✔ Smooth animations  
 
-A few resources to get you started if this is your first Flutter project:
+##  Tech Stack
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+| Technology | Usage |
+|-----------|--------|
+| Flutter | Frontend |
+| Bloc | State management |
+| Hive | Local storage |
+| REST API | JsonPlaceholder mock API |
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🚀 How to Run
+
+```sh
+git clone <your repo link>
+cd <project>
+flutter pub get
+flutter run
