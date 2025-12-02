@@ -7,7 +7,6 @@ A clean Flutter application demonstrating:
 - Error Handling with Retry
 - Search Functionality
 - Animations
-- Responsive UI
 
 ##  Features
 
@@ -17,7 +16,6 @@ A clean Flutter application demonstrating:
 ✔ Search posts  
 ✔ Detail Page  
 ✔ Pull to refresh  
-✔ Responsive UI (MediaQuery + ScreenUtil)  
 ✔ Smooth animations  
 
 ##  Tech Stack
